@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.PingyuejiaoshiDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.username as username
+        ,a.password as password
+        ,a.pingyuejiaoshi_name as pingyuejiaoshiName
+        ,a.pingyuejiaoshi_photo as pingyuejiaoshiPhoto
+        ,a.sex_types as sexTypes
+        ,a.pingyuejiaoshi_phone as pingyuejiaoshiPhone
+        ,a.pingyuejiaoshi_email as pingyuejiaoshiEmail
+        ,a.insert_time as insertTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.PingyuejiaoshiView" >
+        SELECT
+        <include refid="Base_Column_List" />
+
+--         级联表的字段
+
+        FROM pingyuejiaoshi  a
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test=" params.username != '' and params.username != null and params.username != 'null' ">
+                and a.username like CONCAT('%',#{params.username},'%')
+            </if>
+            <if test=" params.password != '' and params.password != null and params.password != 'null' ">
+                and a.password like CONCAT('%',#{params.password},'%')
+            </if>
+            <if test=" params.pingyuejiaoshiName != '' and params.pingyuejiaoshiName != null and params.pingyuejiaoshiName != 'null' ">
+                and a.pingyuejiaoshi_name like CONCAT('%',#{params.pingyuejiaoshiName},'%')
+            </if>
+            <if test="params.sexTypes != null and params.sexTypes != ''">
+                and a.sex_types = #{params.sexTypes}
+            </if>
+            <if test=" params.pingyuejiaoshiPhone != '' and params.pingyuejiaoshiPhone != null and params.pingyuejiaoshiPhone != 'null' ">
+                and a.pingyuejiaoshi_phone like CONCAT('%',#{params.pingyuejiaoshiPhone},'%')
+            </if>
+            <if test=" params.pingyuejiaoshiEmail != '' and params.pingyuejiaoshiEmail != null and params.pingyuejiaoshiEmail != 'null' ">
+                and a.pingyuejiaoshi_email like CONCAT('%',#{params.pingyuejiaoshiEmail},'%')
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+
+        </where>
+
+        order by a.${params.orderBy} desc 
+    </select>
+
+</mapper>
